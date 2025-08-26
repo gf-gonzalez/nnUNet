@@ -308,6 +308,7 @@ def determine_num_input_channels(plans_manager: PlansManager,
         num_input_channels = num_modalities + num_label_inputs
     else:
         num_input_channels = num_modalities
+    num_input_channels = 4
     return num_input_channels
 
 

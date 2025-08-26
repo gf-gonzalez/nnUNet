@@ -20,7 +20,7 @@ def load_pretrained_weights(network, fname, verbose=False):
         saved_model = torch.load(fname, map_location=torch.device('cuda', dist.get_rank()), weights_only=False)
     else:
         saved_model = torch.load(fname, weights_only=False)
-    pretrained_dict = saved_model['network_weights']
+    pretrained_dict = saved_model['state_dict']
 
     skip_strings_in_pretrained = [
         '.seg_layers.',
@@ -34,6 +34,10 @@ def load_pretrained_weights(network, fname, verbose=False):
         mod = mod._orig_mod
 
     model_dict = mod.state_dict()
+
+    pretrained_dict['out.conv.conv.weight'] = torch.randn_like(model_dict['out.conv.conv.weight'])
+    pretrained_dict['out.conv.conv.bias'] = torch.randn_like(model_dict['out.conv.conv.bias'])
+
     # verify that all but the segmentation layers have the same shape
     for key, _ in model_dict.items():
         if all([i not in key for i in skip_strings_in_pretrained]):
